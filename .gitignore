@@ -1,3 +1,2 @@
 .env
-!confs/traefik.toml.example
-confs
+confs/traefik-v*
