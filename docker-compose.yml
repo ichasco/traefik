@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  traefik:
+    image: traefik:v1.7
+    container_name: traefik
+    restart: unless-stopped
+    environment:
+      - OVH_ENDPOINT=${OVH_ENDPOINT}
+      - OVH_APPLICATION_KEY=${OVH_APPLICATION_KEY}
+      - OVH_APPLICATION_SECRET=${OVH_APPLICATION_SECRET}
+      - OVH_CONSUMER_KEY=${OVH_CONSUMER_KEY}
+    networks:
+      - traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $PWD/confs/traefik-v1.toml:/etc/traefik/traefik.toml
+      - acme:/etc/traefik/acme
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: '100m'    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=traefik"
+      - "traefik.frontend.rule=Host:${TRAEFIK_URL}"
+      - "traefik.port=8443"
+      - "docker.group=traefik"
+
+networks:
+  traefik:
+    external:
+      name: traefik
+
+volumes:
+  acme:
